@@ -10,8 +10,7 @@ in CPU usage every 10-20 seconds, lasting for about 3-5 seconds or so.
 About count 800, cpu usage increased permanently to 80%+ and RAM was 3000MB+ at that point, 
 before suddenly lowering to just 3% CPU usage and 650MB RAM at count ~ 900.
 What could cause this dramatic drop in both CPU and RAM usage?
-When the max count at 2000 was reached, the CPU usage increased to stay around 19%
-- this is due to the removal of the first measurement. Any way to optimize performance here?
+When the max count at 2000 was reached, the CPU usage increased to stay around 19% - this is due to the removal of the first measurement. Any way to optimize performance here?
 From 1400 to 1450 memory use increased quickly from 1000MB to 1300MB and dropped 300MB at 1460 in a second.
 This pattern was seen repeatedly from that point on.
 From 1800-1850 RAM usage went from 750-1400 dropping back to 1000 and going up to 1400 again 30 seconds later
