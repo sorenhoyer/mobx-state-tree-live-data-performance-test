@@ -61,7 +61,7 @@ const RootStore = types.model({
 
 const store = RootStore.create({})
 
-connectReduxDevtools(require('remotedev'), store);
+// connectReduxDevtools(require('remotedev'), store);
 // unprotect(store);
 window.store = store;
 

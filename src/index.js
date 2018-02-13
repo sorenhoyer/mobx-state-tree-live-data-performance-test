@@ -91,7 +91,7 @@ const App = inject('store')(
           <div  key={key}>
             {/*ideally we could have used the datapoints[key].min datapoints[key].max computed view functions here instead*/}
             <p>min: {datapoints[key].minHeap.data[0]} | max: {datapoints[key].maxHeap.data[0]}</p>
-          
+            index.js - protected
             <Chart
               key={key}
               chartKey={key}
