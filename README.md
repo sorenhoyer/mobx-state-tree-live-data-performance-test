@@ -1,3 +1,5 @@
+![Image of Yaktocat](https://raw.githubusercontent.com/sorenhoyer/mobx-state-tree-live-data-performance-test/master/mobx-state-tree-live-data-performance-test.PNG)
+
 # mobx-state-tree-live-data-performance-test
 An attempt to lower CPU and RAM usage as much as possible with the current data structure while maintaining an updated min / max value for each insertion. After 2000 seconds (insertions) the chart will start rolling since the first item will be removed when the limit is reached.
 
