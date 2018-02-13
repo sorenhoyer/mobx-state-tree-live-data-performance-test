@@ -3,7 +3,18 @@
 # mobx-state-tree-live-data-performance-test
 An attempt to lower CPU and RAM usage as much as possible with the current data structure while maintaining an updated min / max value for each insertion. After 2000 seconds (insertions) the chart will start rolling since the first item will be removed when the limit is reached.
 
-**clone, npm install & npm start to run the app**
+**Development** mode:
+- clone
+- npm install
+- npm start to run the app
+
+**Production** mode:
+
+- clone
+- npm install
+- npm run build
+- npm install -g serve
+- serve -s build
 
 ## index.js - using Datapoint + Heap + MeasurementQueue + Measurement: ##
 
