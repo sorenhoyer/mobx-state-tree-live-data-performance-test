@@ -6,10 +6,10 @@ import { Provider, observer, inject } from 'mobx-react';
 import { connectReduxDevtools } from 'mst-middlewares'
 import registerServiceWorker from './registerServiceWorker';
 import Chart from './Chart';
-import Heap from './models-unprotected/Heap';
-import Measurement from './models-unprotected/Measurement';
-import MeasurementQueue from './models-unprotected/MeasurementQueue';
-import Datapoint from './models-unprotected/Datapoint';
+import Heap from './models/Heap';
+import Measurement from './models/Measurement';
+import MeasurementQueue from './models/MeasurementQueue';
+import Datapoint from './modelsDatapoint';
 
 const swap = (data, i, j) => {
   let temp = data[i];
