@@ -16,6 +16,10 @@ An attempt to lower CPU and RAM usage as much as possible with the current data 
 - npm install -g serve
 - serve -s build
 
+Testing should be done with a production build.
+
+Rename the index.js to something else and index-[whatever] to index.js to test. Make sure you're not running a cached version - ctrl+f5 with chrome console enabled to force cache flush. Also you may way to simple comment out the chart component, to further isolate the MobX State Tree we're trying to test. The chart is only meant for adding context to this example.
+
 ## index.js - using Datapoint + Heap + MeasurementQueue + Measurement: ##
 
 
