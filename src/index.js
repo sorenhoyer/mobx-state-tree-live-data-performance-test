@@ -82,29 +82,31 @@ const plotOptions = {
 
 const App = inject('store')(
   observer(({ store }) => {
-    const datapoints = /*toJS(*/store.datapoints.toJSON(); //toJS is too expensive
+    const datapoints = /*toJS(*/store.datapoints//.toJSON(); //toJS is too expensive
 
     return (
       <div>
-        <p>count: {datapoints['sensor1'] && datapoints['sensor1'].queue.data.length}</p>
-        {datapoints && Object.keys(datapoints) && Object.keys(datapoints).filter(key=>key ==='sensor1').map(key =>
-          <div  key={key}>
-            {/*ideally we could have used the datapoints[key].min datapoints[key].max computed view functions here instead*/}
-            <p>min: {datapoints[key].minHeap.data[0]} | max: {datapoints[key].maxHeap.data[0]}</p>
-            index.js - protected
-            <Chart
-              key={key}
-              chartKey={key}
-              title={key}
-              subtitle=''
-              xAxisTitle='Time'
-              yAxisTitle='Level'
-              data={datapoints[key].queue.data}
-              overlayCharts={[]}
-              plotOptions={plotOptions}
-            />
-          </div>
-        )}
+        <p>count: {datapoints.get('sensor1') && datapoints.get('sensor1').queue.data.length}</p>
+        {
+          datapoints && datapoints.keys() && datapoints.keys().filter(key=>key ==='sensor1').map(key =>
+            <div  key={key}>
+              {/*ideally we could have used the datapoints[key].min datapoints[key].max computed view functions here instead - but they don't seem exposed*/}
+              <p>min: {datapoints.get(key).minHeap.data[0]} | max: {datapoints.get(key).maxHeap.data[0]}</p>
+              index.js - protected
+              <Chart
+                key={key}
+                chartKey={key}
+                title={key}
+                subtitle=''
+                xAxisTitle='Time'
+                yAxisTitle='Level'
+                data={datapoints.get(key).queue.data.slice()}
+                overlayCharts={[]}
+                plotOptions={plotOptions}
+              />
+            </div>
+          )
+        }
         
       </div>
     )

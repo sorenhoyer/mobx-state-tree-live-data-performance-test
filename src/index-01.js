@@ -82,24 +82,26 @@ const plotOptions = {
 
 const App = inject('store')(
   observer(({ store }) => {
-    const datapoints = store.datapoints.toJSON();
+    const datapoints = store.datapoints//.toJSON();
     return (
       <div>
         
-        <p>count: {datapoints['sensor1'] && datapoints['sensor1'].length}</p>
-        {datapoints && Object.keys(datapoints) && Object.keys(datapoints).filter(key=>key ==='sensor1').map(key =>
-          <Chart
-            key={key}
-            chartKey={key}
-            title={key}
-            subtitle=''
-            xAxisTitle='Time'
-            yAxisTitle='Level'
-            data={datapoints[key]} // maybe use env to set cycles differently for node / production for increased performance
-            overlayCharts={[]}
-            plotOptions={plotOptions}
-          />
-        )}
+        <p>count: {datapoints.get('sensor1') && datapoints.get('sensor1').length}</p>
+        {
+          datapoints && datapoints.keys() && datapoints.keys().filter(key=>key ==='sensor1').map(key =>
+            <Chart
+              key={key}
+              chartKey={key}
+              title={key}
+              subtitle=''
+              xAxisTitle='Time'
+              yAxisTitle='Level'
+              data={datapoints.get(key).slice()}
+              overlayCharts={[]}
+              plotOptions={plotOptions}
+            />
+          )
+        }
       </div>
     )
   })
