@@ -6,56 +6,58 @@ import { Provider, observer, inject } from 'mobx-react';
 import { connectReduxDevtools } from 'mst-middlewares'
 import registerServiceWorker from './registerServiceWorker';
 import Chart from './Chart';
-import Heap from './models/Heap';
-import Measurement from './models/Measurement';
-import MeasurementQueue from './models/MeasurementQueue';
 import Sensor from './models/Sensor';
 
-const sensors = ['sensor1', 'sensor2', 'sensor3','sensor4', 'sensor5', 'sensor6','sensor7', 'sensor8', 'sensor9', 'sensor10']
-
 const RootStore = types.model({
-  datapointsCount: (types.number, 2000),
+  sensorsCount: (types.number, 2000),
   
 })
 .volatile(self => ({
-  datapoints: new Map(),
+  sensors: new Map(),
 }))
 .actions(self => ({
   afterCreate(){
+    const sensorIds = ['sensor1', 'sensor2', 'sensor3','sensor4', 'sensor5', 'sensor6','sensor7', 'sensor8', 'sensor9', 'sensor10'];
+    
+    for(let sensor of sensorIds) {
+      self.sensors.set(sensor, new Sensor(2000));
+    }
+
     setInterval(function(){ 
       let out = {};
       const x = + new Date()  // unix timestamp
-      for(let sensor of sensors){
+      for(let sensor of sensorIds){
         const y = Math.floor(Math.random() * 10000) + 1  
         const m = {x: x, y: y}
         out[sensor] = m;
       }
       
-      self.setDatapoints(out)
+      self.addMeasurement(out)
     }, 1000);
   },
-  updateDatapoints(key, value) {
-    self.datapoints.set(key, value);
+  updateSensors(key, value) {
+    self.sensors.set(key, value);
+    console.log(self.sensors)
   },
 
-  setDatapoints(incomingData) {
-    const keys = [...self.datapoints.keys()];
+  addMeasurement(incomingData) {
+    const keys = [...self.sensors.keys()];
     // add new incoming timestamped device data to existing measurements
     if (keys.length === 0) {
       for (const key in incomingData) {
-        const d = Sensor.create();
-        d.add(Measurement.create(incomingData[key])); // measurement
-        self.updateDatapoints(key, d);
+        const d = new Sensor(2000);
+        d.add(incomingData[key]); // measurement
+        self.updateSensors(key, d);
       }
     } else {
       for (const key in incomingData) {
         
         if(keys.indexOf(key) > -1){
-          self.datapoints.get(key).add(Measurement.create(incomingData[key])) 
+          self.sensors.get(key).add(incomingData[key]) 
         } else {
-          const d = Sensor.create();
-          d.add(Measurement.create(incomingData[key])); // measurement
-          self.updateDatapoints(key, d);
+          const d = new Sensor(2000);
+          d.add(incomingData[key]); // measurement
+          self.updateSensors(key, d);
         }
       }
     }
@@ -64,7 +66,7 @@ const RootStore = types.model({
 
 const store = RootStore.create({})
 
-// connectReduxDevtools(require('remotedev'), store);
+connectReduxDevtools(require('remotedev'), store);
 // unprotect(store);
 window.store = store;
 
@@ -85,16 +87,16 @@ const plotOptions = {
 
 const App = inject('store')(
   observer(({ store }) => {
-    const datapoints = /*toJS(*/store.datapoints//.toJSON(); //toJS is too expensive
-    const keys = [ ...datapoints.keys() ];
+    const sensors = /*toJS(*/store.sensors//.toJSON(); //toJS is too expensive
+    const keys = [ ...sensors.keys() ];
+    console.log(store)
     return (
       <div>
-        <p>count: {datapoints.get('sensor1') && datapoints.get('sensor1').queue.data.length}</p>
+        <p>count: {sensors.get('sensor1') && sensors.get('sensor1').queue.data.length}</p>
         {
-          datapoints && keys && keys.filter(key=>key ==='sensor1').map(key =>
+          sensors && keys && keys.filter(key=>key ==='sensor1').map(key =>
             <div  key={key}>
-              {/*ideally we could have used the datapoints[key].min datapoints[key].max computed view functions here instead - but they don't seem exposed*/}
-              <p>min: {datapoints.get(key).minHeap.data[0]} | max: {datapoints.get(key).maxHeap.data[0]}</p>
+              <p>min: {sensors.get(key).minHeap.data[0]} | max: {sensors.get(key).maxHeap.data[0]}</p>
               index.js - protected
               <Chart
                 key={key}
@@ -103,7 +105,7 @@ const App = inject('store')(
                 subtitle=''
                 xAxisTitle='Time'
                 yAxisTitle='Level'
-                data={datapoints.get(key).queue.data.slice()}
+                data={sensors.get(key).queue.data.slice()}
                 overlayCharts={[]}
                 plotOptions={plotOptions}
               />
