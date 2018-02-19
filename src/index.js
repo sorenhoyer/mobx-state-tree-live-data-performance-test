@@ -9,14 +9,17 @@ import Chart from './Chart';
 import Heap from './models/Heap';
 import Measurement from './models/Measurement';
 import MeasurementQueue from './models/MeasurementQueue';
-import Datapoint from './models/Datapoint';
+import Sensor from './models/Sensor';
 
 const sensors = ['sensor1', 'sensor2', 'sensor3','sensor4', 'sensor5', 'sensor6','sensor7', 'sensor8', 'sensor9', 'sensor10']
 
 const RootStore = types.model({
   datapointsCount: (types.number, 2000),
-  datapoints: types.optional(types.map(Datapoint), {}),
+  
 })
+.volatile(self => ({
+  datapoints: new Map(),
+}))
 .actions(self => ({
   afterCreate(){
     setInterval(function(){ 
@@ -36,21 +39,21 @@ const RootStore = types.model({
   },
 
   setDatapoints(incomingData) {
-    const keys = self.datapoints.keys();
+    const keys = [...self.datapoints.keys()];
     // add new incoming timestamped device data to existing measurements
     if (keys.length === 0) {
       for (const key in incomingData) {
-        const d = Datapoint.create();
+        const d = Sensor.create();
         d.add(Measurement.create(incomingData[key])); // measurement
         self.updateDatapoints(key, d);
       }
     } else {
       for (const key in incomingData) {
         
-        if(self.datapoints.keys().indexOf(key) > -1){
+        if(keys.indexOf(key) > -1){
           self.datapoints.get(key).add(Measurement.create(incomingData[key])) 
         } else {
-          const d = Datapoint.create();
+          const d = Sensor.create();
           d.add(Measurement.create(incomingData[key])); // measurement
           self.updateDatapoints(key, d);
         }
@@ -83,12 +86,12 @@ const plotOptions = {
 const App = inject('store')(
   observer(({ store }) => {
     const datapoints = /*toJS(*/store.datapoints//.toJSON(); //toJS is too expensive
-
+    const keys = [ ...datapoints.keys() ];
     return (
       <div>
         <p>count: {datapoints.get('sensor1') && datapoints.get('sensor1').queue.data.length}</p>
         {
-          datapoints && datapoints.keys() && datapoints.keys().filter(key=>key ==='sensor1').map(key =>
+          datapoints && keys && keys.filter(key=>key ==='sensor1').map(key =>
             <div  key={key}>
               {/*ideally we could have used the datapoints[key].min datapoints[key].max computed view functions here instead - but they don't seem exposed*/}
               <p>min: {datapoints.get(key).minHeap.data[0]} | max: {datapoints.get(key).maxHeap.data[0]}</p>
